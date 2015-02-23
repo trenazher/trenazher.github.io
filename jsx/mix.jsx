@@ -57,7 +57,8 @@ var Mix = React.createClass({
         var testing = this.state.testing;
         if (testing) {
             var goParts = this.props.goParts;
-            return <Test data={data} part={part} countA={countA} countB={countB} countC={countC} goParts={goParts} />;
+            var tasks
+            return <Test data={data} tasks={tasks} goParts={goParts} />;
         }
 
         var total = this.state.numOfA + this.state.numOfB + this.state.numOfC;

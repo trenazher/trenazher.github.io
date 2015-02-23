@@ -8,3 +8,9 @@ Array.prototype.shuffle = function() {
     }
     return this;
 }
+
+//возвращает массив из how случайных чисел от 0 до max-1
+function randoms (max, how) {
+    var result = [];
+    
+}
