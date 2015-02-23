@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Тренажер для студентов</title>
+
+  <link href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css' rel='stylesheet'>
+  
+  <!--[if lt IE 9]>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js'></script>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js'></script>
+  <![endif]-->
+
+  <script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js'></script>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/react/0.12.2/JSXTransformer.js'></script>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js'></script>
+
+  <link href='style.css' rel='stylesheet'>
+  <script src='data.js'></script>
+  <script src='additional.js'></script>
+
+  <script src='jsx/main.jsx' type='text/jsx'></script>
+  <script src='jsx/hello.jsx' type='text/jsx'></script>
+  <script src='jsx/partslist.jsx' type='text/jsx'></script>
+  <script src='jsx/mix.jsx' type='text/jsx'></script>
+
+  <script type='text/jsx'>
+    $(function() {
+        React.render(
+          <Main data={data} />,
+          document.body);
+    });
+  </script>
+  </head>
+  <body>
+  </body>
+</html>

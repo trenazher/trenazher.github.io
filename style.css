@@ -1,0 +1,34 @@
+body {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.container {
+	max-width: 900px;
+}
+
+.jumbotron {
+	text-align: center;
+}
+
+.pagination {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.pagination > .success > span,
+.pagination > .success > span:hover,
+.pagination > .success > span:focus,
+.pagination > .success > a,
+.pagination > .success > a:hover,
+.pagination > .success > a:focus {
+    z-index: 2;
+    color: #fff;
+    cursor: default;
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+}
+
+h4 {
+    margin-top: 0;
+}
