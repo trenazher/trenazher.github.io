@@ -3,11 +3,11 @@
 //генерирует html без контейнера
 
 var Test = React.createClass({
-
     propTypes: {
         data: React.PropTypes.object,
         tasks: React.PropTypes.array,
-        goParts: React.PropTypes.func
+        setAnswers: React.PropTypes.func,
+        goResult: React.PropTypes.func
     },
 
     getInitialState: function() {
@@ -16,13 +16,13 @@ var Test = React.createClass({
         var shuffles = [];
         for (var i = 0; i < length; i++) {
             answers.push(-1);
-            shuffles.push([0,1,2,3,4].shuffle());
+            shuffles.push(shuffle([0,1,2,3,4]));
         }
         return {
-            answers: answers,   //пользовательские ответы
-            current: 0,         //текущий вид, -1 результат тестирования, -2 верные ответы, 0,1,2,3.. - вопросы
-            endWarning: false,  //нажата кнопка завершения теста
-            shuffles: shuffles  //перемешанный порядок ответов
+            answers: answers,
+            current: 0,
+            endWarning: false,
+            shuffles: shuffles
         };
     },
 
@@ -32,21 +32,9 @@ var Test = React.createClass({
         });
     },
 
-    render: function() {
-        var current = this.state.current;
-        var mainHtml = null;
-        if (current >= 0)
-            mainHtml = this.testing();
-        else if (current == -1)
-            mainHtml = this.result();
-        else if (current == -2)
-            mainHtml = this.rightAnswers();
-        return mainHtml;
-    },
-
     changeAnswer: function(question, answer){
         var newAnswers = this.state.answers.slice();
-        newAnswers[question] = answer;
+        newAnswers[question] = answer ;
         this.setState({
             answers: newAnswers
         });
@@ -56,16 +44,29 @@ var Test = React.createClass({
         this.setState({endWarning: state});
     },
 
-    testing: function(){
-        var index = this.props.index;
+    goResult: function() {
+        var goResult = this.props.goResult;
+        var setAnswers = this.props.setAnswers;
+        var answers = this.state.answers;
+        setAnswers(answers);
+        goResult();
+    },
+
+    render: function(){
+        var tasks = this.props.tasks;
         var current = this.state.current;
-        var length = this.props.data.questionsCount;
+        var currtask = tasks[current];
+        var currpart = currtask.part;
+        var currlevel = currtask.level; 
+        var levelletter = 'abc'.charAt(currlevel);
+        var currnum = currtask.num;
+        var length = tasks.length;
         var currShuffle = this.state.shuffles[current];
         var answers = this.state.answers;
         var currAnswer = answers[current];
-        var header = this.props.header;
-        var name = this.props.name;
+        var data = this.props.data;
         var endWarning = this.state.endWarning;
+        var goResult = this.goResult;
 
         var countOfAnswered = 0;
         for (var i = 0; i < answers.length; i++)
@@ -75,10 +76,10 @@ var Test = React.createClass({
         var radios = [];
         for (var i = 0; i < 5; i++)
             radios.push(
-                <div className="radio">
+                <div className='radio'>
                     <label>
-                        <input onChange={this.changeAnswer.bind(this,current,i)} type="radio" value={""+i} checked={i==currAnswer} name={"answers"+current} />
-                        <img src={"data/"+index+"/demotest/"+(current+1)+"/answer"+(i+1)+".png"} />
+                        <input onChange={this.changeAnswer.bind(this,current,i)} type='radio' value={''+i} checked={i==currAnswer} name={'answers'+current} />
+                        <img src={'data/'+(currpart+1)+'/'+levelletter+(currnum+1)+'.'+(i+1)+'.png'} />
                     </label>
                 </div>
             );
@@ -88,12 +89,12 @@ var Test = React.createClass({
 
         var pagination = [];
         for (var i = 0; i < length; i++) {
-            var currClass = "";
-            if (answers[i] != -1) currClass = "success";
-            if (current == i) currClass = "active";
+            var currClass = '';
+            if (answers[i] != -1) currClass = 'success';
+            if (current == i) currClass = 'active';
             pagination.push(
                 <li className={currClass}>
-                    <a onClick={this.changeCurrent.bind(this,i)} href="#">{i+1}</a>
+                    <a onClick={this.changeCurrent.bind(this,i)} href='#'>{i+1}</a>
                 </li>
             );
         }
@@ -101,22 +102,22 @@ var Test = React.createClass({
         var button = null;
         if (current < length-1) {
             if (currAnswer == -1)
-                button = <button onClick={this.changeCurrent.bind(this,current+1)} className="btn btn-default">Пропустить</button>;
+                button = <button onClick={this.changeCurrent.bind(this,current+1)} className='btn btn-default'>Пропустить</button>;
             else
-                button = <button onClick={this.changeCurrent.bind(this,current+1)} className="btn btn-primary">Далее</button>;
+                button = <button onClick={this.changeCurrent.bind(this,current+1)} className='btn btn-primary'>Далее</button>;
         }
 
         var modal = null;
         if (endWarning)
             modal = (
-                <div className="modal show" role="dialog">
-                    <div className="modal-backdrop fade in" style={{height: document.body.scrollHeight+"px"}}></div>
-                    <div className="modal-dialog modal-sm">
-                        <div className="modal-content">
-                            <div className="modal-header">Завершить тест?</div>
-                            <div className="modal-body">
-                                <button onClick={this.changeCurrent.bind(this,-1)} className="btn btn-primary">Да</button>
-                                <button onClick={this.endTest.bind(this,false)} className="btn btn-default">Отменить</button>
+                <div className='modal show' role='dialog'>
+                    <div className='modal-backdrop fade in' style={{height: document.body.scrollHeight+'px'}}></div>
+                    <div className='modal-dialog modal-sm'>
+                        <div className='modal-content'>
+                            <div className='modal-header'>{data.testEndTest}</div>
+                            <div className='modal-body'>
+                                <button onClick={goResult} className='btn btn-primary'>{data.testYes}</button>
+                                <button onClick={this.endTest.bind(this,false)} className='btn btn-default'>{data.testNo}</button>
                             </div>
                         </div>
                     </div>
@@ -124,28 +125,28 @@ var Test = React.createClass({
             );
 
         return (
-            <div className="panel panel-primary">
-                <div className="panel-heading">{header}"{name}"</div>
-                <div className="panel-body" style={{height: '450px'}}>
-                    <h4>Вопрос {current+1} из {length}</h4>
-                    <img src={"data/"+index+"/demotest/"+(current+1)+"/question.png"} />
+            <div className='panel panel-primary'>
+                <div className='panel-heading'>{data.testHeader}</div>
+                <div className='panel-body' style={{minHeight: '450px'}}>
+                    <h4>{data.testQustionWord}{current+1}{data.testOfWord}{length}</h4>
+                    <img src={'data/'+(currpart+1)+'/'+levelletter+(currnum+1)+'.png'} />
                     {shuffledRadios}
                 </div>
-                <div className="panel-footer">
+                <div className='panel-footer'>
                     <div>
                         {button}
-                        <button onClick={this.endTest.bind(this,true)} className="btn btn-danger pull-right">Завершить</button>
+                        <button onClick={this.endTest.bind(this,true)} className='btn btn-danger pull-right'>Завершить</button>
                     </div>
-                    <ul className="pagination pagination-sm">
-                        <li className={current==0 ? "disabled" : ""}>
-                            <a onClick={this.changeCurrent.bind(this,current-1)} href="#" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
+                    <ul className='pagination pagination-sm'>
+                        <li className={current==0 ? 'disabled' : ''}>
+                            <a onClick={this.changeCurrent.bind(this,current-1)} href='#'>
+                                <span aria-hidden='true'>&laquo;</span>
                             </a>
                         </li>
                         {pagination}
-                        <li className={current==length-1 ? "disabled" : ""}>
-                            <a onClick={this.changeCurrent.bind(this,current+1)} href="#" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
+                        <li className={current==length-1 ? 'disabled' : ''}>
+                            <a onClick={this.changeCurrent.bind(this,current+1)} href='#'>
+                                <span aria-hidden='true'>&raquo;</span>
                             </a>
                         </li>
                     </ul>

@@ -24,11 +24,14 @@ body {
 .pagination > .success > a:focus {
     z-index: 2;
     color: #fff;
-    cursor: default;
     background-color: #5cb85c;
     border-color: #5cb85c;
 }
 
 h4 {
     margin-top: 0;
+}
+
+.panel-footer {
+    min-height: 55px;
 }

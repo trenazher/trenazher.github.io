@@ -1,98 +1,69 @@
 var Mix = React.createClass({
-
-    propTypes: {
-        data: React.PropTypes.object,       //данные
-        part: React.PropTypes.number,       //текущий раздел
-        goParts: React.PropTypes.func       //функция перехода в список разделов
+    props: {
+        part: React.PropTypes.array,
+        data: React.PropTypes.object,
+        setTasks: React.PropTypes.func,
+        goTest: React.PropTypes.func,
+        goParts: React.PropTypes.func
     },
 
-    getInitialState: function () {
-        var curr = this.props.data.db[this.props.part];
+    getInitialState: function() {
         return {
-            numOfA: curr.Atests.length,     //кол-во легких заданий
-            numOfB: curr.Btests.length,     //кол-во средних заданий
-            numOfC: curr.Ctests.length,     //кол-во трудных заданий
-            testing: false                  //тестирование или выбор заданий?
+            level: 0
         };
     },
 
-    setA: function(e) {
-        var count = this.props.data.db[this.props.part].Atests.length;
-        var how = +e.target.value;
-        if (how > count) how = count;
-        if (how < 0) how = 0;
-        this.setState({numOfA: how});
+    checkLevel: function(level) {
+        this.setState({level: level});
     },
 
-    setB: function(e) {
-        var count = this.props.data.db[this.props.part].Btests.length;
-        var how = +e.target.value;
-        if (how > count) how = count;
-        if (how < 0) how = 0;
-        this.setState({numOfB: how});
+    startBase: function(level) {
+        var goTest = this.props.goTest;
+        var part = this.props.part;
+        var setTasks = this.props.setTasks;
+        var testscount = this.props.data.levels[level];
+        var tasks = createTasks([part], testscount);
+        setTasks(tasks);
+        goTest();
     },
 
-    setC: function(e) {
-        var count = this.props.data.db[this.props.part].Ctests.length;
-        var how = +e.target.value;
-        if (how > count) how = count;
-        if (how < 0) how = 0;
-        this.setState({numOfC: how});
-    },
-
-    goTest: function(testing){
-        this.setState({
-            testing: testing
-        });
+    startStandart: function() {
+        var goTest = this.props.goTest;
+        var part = this.props.part;
+        var setTasks = this.props.setTasks;
+        var testscount = this.props.data.levelStandart;
+        var tasks = createTasks([part], testscount);
+        setTasks(tasks);
+        goTest();
     },
 
     render: function() {
-        var part = this.props.part;
         var data = this.props.data;
-        var countA = this.state.numOfA;
-        var countB = this.state.numOfB;
-        var countC = this.state.numOfC;
+        var part = this.props.part;
+        var checkLevel = this.checkLevel;
+        var level = this.state.level;
+        var startBase = this.startBase;
+        var startStandart = this.startStandart;
         var curr = data.db[part];
+        var goParts = this.props.goParts;
 
-        var testing = this.state.testing;
-        if (testing) {
-            var goParts = this.props.goParts;
-            var tasks
-            return <Test data={data} tasks={tasks} goParts={goParts} />;
-        }
-
-        var total = this.state.numOfA + this.state.numOfB + this.state.numOfC;
         return (
             <div className='panel panel-primary'>
                 <div className='panel-heading'>{data.mixHeader}&laquo;{curr.name}&raquo;</div>
                 <div className='panel-body'>
                     <p>{data.mixText}</p>
                     <div className='row'>
-                        <div className='col-xs-4 text-center'>
-                            <strong>{data.mixLevelA}</strong>
-                            <div className='input-group'>
-                                <input onChange={this.setA} value={countA} className='form-control' type='number' />
-                                <span className='input-group-addon'>{data.mixFrom}{curr.Atests.length}</span>
-                            </div>
-                        </div>
-                        <div className='col-xs-4 text-center'>
-                            <strong>{data.mixLevelB}</strong>
-                            <div className='input-group'>
-                                <input onChange={this.setB} value={countB} className='form-control' type='number' />
-                                <span className='input-group-addon'>{data.mixFrom}{curr.Btests.length}</span>
-                            </div>
-                        </div>
-                        <div className='col-xs-4 text-center'>
-                            <strong>{data.mixLevelC}</strong>
-                            <div className='input-group'>
-                                <input onChange={this.setC} value={countC} className='form-control' type='number' />
-                                <span className='input-group-addon'>{data.mixFrom}{curr.Ctests.length}</span>
-                            </div>
-                        </div>
+                        <div className='col-xs-4'><input onClick={startBase.bind(null, 0)} className='btn btn-default btn-block' value={data.mixLevelA} type='button' /></div>
+                        <div className='col-xs-4'><input onClick={startBase.bind(null, 1)} className='btn btn-default btn-block' value={data.mixLevelB} type='button' /></div>
+                        <div className='col-xs-4'><input onClick={startBase.bind(null, 2)} className='btn btn-default btn-block' value={data.mixLevelC} type='button' /></div>
                     </div>
-                    <h3 className='text-right'>{data.mixTotal}{total}</h3>
-                    <input className='btn btn-success btn-lg btn-block' value={data.mixStart} type='button' />
+                    <br />
+                    <input onClick={startStandart} className='btn btn-success btn-block' value={data.mixStartStandart} type='button' />
                 </div>
+                <div className="panel-footer"><div>
+                    <button onClick={goParts} className="btn btn-primary pull-right">Вернуться</button>
+                    <div class="clearfix"></div>
+                </div></div>
             </div>
         );
     }
